@@ -50,13 +50,14 @@ def awstats_conf_file(islb,servername,customlog):
     # merge tool
     mergetool = '/usr/share/awstats/tools/logresolvemerge.pl '
 
-	if islb:
+    if islb:
         lblogfile = ' ' + args.logdir + customlog.split('/')[-2] + '/' + customlog.split('/')[-1]
         mergelog = mergetool + customlog + lblogfile + ' |'
         awsfilename = args.aws + re.sub('\.','_',servername) + '.conf'
         confline = 'LogFile="'+ mergelog +'"\nSiteDomaine="'+ servername +'"\nInclude "/etc/awstats/default_vars"\n'
 
     else:
+        awsfilename = args.aws + re.sub('\.','_',servername) + '.conf'
         confline = 'LogFile="'+ customlog +'"\nSiteDomaine="'+ servername +'"\nInclude "/etc/awstats/default_vars"\n'
 
     # writing conf file
@@ -71,7 +72,7 @@ def add_vhost(vhost):
 
     vhosts_vars = []
     # parsing vhost file
-    with  open(vhostdir+vhost) as vhostfile:
+    with  open(args.dir+vhost) as vhostfile:
         servername = customlog = None
         for line in vhostfile:
         # lets lookf for all ServerNames and CustomLogs
