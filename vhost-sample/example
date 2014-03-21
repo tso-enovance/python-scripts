@@ -1,0 +1,135 @@
+<VirtualHost *:80>
+    ServerName www.exemple.com
+    ServerAlias exemple.com 
+
+    DocumentRoot /home/sites_web/exemple/www
+
+    <Directory /home/sites_web/exemple/www>
+        Order Deny,Allow
+        Allow from all
+        Options -Indexes MultiViews FollowSymLinks
+        AllowOverride all
+    </Directory>
+
+    ErrorLog /home/logs/apache2/exemple/error-exemple.log
+    CustomLog /home/logs/apache2/exemple/access-exemple.log combined
+</VirtualHost>
+
+<VirtualHost *:80>
+    ServerName www.exemple.fr
+    ServerAlias exemple.fr
+ 
+    DocumentRoot /home/sites_web/exemple/www/fr
+
+    <Directory /home/sites_web/exemple/www/fr>
+        Order Deny,Allow
+        Allow from all
+        Options -Indexes MultiViews FollowSymLinks
+        AllowOverride all
+    </Directory>
+
+    ErrorLog /home/logs/apache2/exemple/error-exemple-fr.log
+    CustomLog /home/logs/apache2/exemple/access-exemple-fr.log combined
+</VirtualHost>
+
+<VirtualHost *:80>
+    ServerName www.exemple.be
+    ServerAlias exemple.be
+ 
+    DocumentRoot /home/sites_web/exemple/www/be_fr
+
+    <Directory /home/sites_web/exemple/www/be_fr>
+        Order Deny,Allow
+        Allow from all
+        Options -Indexes MultiViews FollowSymLinks
+        AllowOverride all
+    </Directory>
+
+    ErrorLog /home/logs/apache2/exemple/error-exemple-be-fr.log
+    CustomLog /home/logs/apache2/exemple/access-exemple-be-nl.log combined
+</VirtualHost>
+
+<VirtualHost *:80>
+    ServerName www.exemple.de
+    ServerAlias exemple.de
+ 
+    DocumentRoot /home/sites_web/exemple/www/de
+
+    <Directory /home/sites_web/exemple/www/de>
+        Order Deny,Allow
+        Allow from all
+        Options -Indexes MultiViews FollowSymLinks
+        AllowOverride all
+    </Directory>
+
+    ErrorLog /home/logs/apache2/exemple/error-exemple-de.log
+    CustomLog /home/logs/apache2/exemple/access-exemple-de.log combined
+</VirtualHost>
+
+<VirtualHost *:80>
+    ServerName www.exemple.es
+    ServerAlias exemple.es
+ 
+    DocumentRoot /home/sites_web/exemple/www/es
+
+    <Directory /home/sites_web/exemple/www/es>
+        Order Deny,Allow
+        Allow from all
+        Options -Indexes MultiViews FollowSymLinks
+        AllowOverride all
+    </Directory>
+
+    ErrorLog /home/logs/apache2/exemple/error-exemple-es.log
+    CustomLog /home/logs/apache2/exemple/access-exemple-es.log combined
+</VirtualHost>
+
+<VirtualHost *:80>
+    ServerName www.exemple.nl
+    ServerAlias exemple.nl
+ 
+    DocumentRoot /home/sites_web/exemple/www/nl
+
+    <Directory /home/sites_web/exemple/www/nl>
+        Order Deny,Allow
+        Allow from all
+        Options -Indexes MultiViews FollowSymLinks
+        AllowOverride all
+    </Directory>
+
+    ErrorLog /home/logs/apache2/exemple/error-exemple-nl.log
+    CustomLog /home/logs/apache2/exemple/access-exemple-nl.log combined
+</VirtualHost>
+
+<VirtualHost *:80>
+    ServerName www.exemple.pr
+    ServerAlias exemple.pr
+ 
+    DocumentRoot /home/sites_web/exemple/www/pr
+
+    <Directory /home/sites_web/exemple/www/pr>
+        Order Deny,Allow
+        Allow from all
+        Options -Indexes MultiViews FollowSymLinks
+        AllowOverride all
+    </Directory>
+
+    ErrorLog /home/logs/apache2/exemple/error-exemple-pr.log
+    CustomLog /home/logs/apache2/exemple/access-exemple-pr.log combined
+</VirtualHost>
+
+<VirtualHost *:80>
+    ServerName www.exemple.us
+    ServerAlias exemple.us
+ 
+    DocumentRoot /home/sites_web/exemple/www/usa
+
+    <Directory /home/sites_web/exemple/www/usa>
+        Order Deny,Allow
+        Allow from all
+        Options -Indexes MultiViews FollowSymLinks
+        AllowOverride all
+    </Directory>
+
+    ErrorLog /home/logs/apache2/exemple/error-exemple-us.log
+  #  CustomLog /home/logs/apache2/exemple/access-exemple-us.log combined
+</VirtualHost>
