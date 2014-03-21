@@ -11,15 +11,15 @@ import os
 parser = argparse.ArgumentParser(description='Add a vhost or all enabled vhosts to awstats.',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 group = parser.add_mutually_exclusive_group()
 group.add_argument('-s','--site',
-        metavar='<vhost>',type=str,help='add a single vhost')
+        metavar='<vhost>',type=str,help='Add a single vhost')
 group.add_argument('-a','--all',
-        help='add all vhosts',action='store_true')
-parser.add_argument('-d','--dir',
-        metavar='<dir>',type=str,help='define vhost directory',default='/etc/apache2/sites-enabled/')
+        help='Add all vhosts',action='store_true')
 parser.add_argument('-l','--logdir',
-        metavar='<logdir>',type=str,help='define log directory',default='/home/logs/apache2/')
+        metavar='<logdir>',type=str,help='Defines the log directory of an other web instance. This is usefull if you have vhosts that are loadbalanced on different servers.',default='/home/logs/apache2_remy2/')
+parser.add_argument('-d','--dir',
+        metavar='<dir>',type=str,help='Defines the vhost directory.',default='/etc/apache2/sites-enabled/')
 parser.add_argument('-j','--jaws',
-        metavar='<jawsdir>',type=str,help='define jaws conf.d directory',default='/home/sites_web/002-awstats/')
+        metavar='<jawsdir>',type=str,help='Defines the jaws configuration directory.',default='/home/sites_web/002-awstats/conf.d/')
 args = parser.parse_args()
 
 # functions
@@ -29,28 +29,39 @@ def check_log(logfilearg,vhost):
     logfile = logfilearg.split('/')
 
     # check
-    web2logfiles = '/home/logs/apache2_remy2/' + logfile[-2] + '/' + logfile[-1]
+    web2logfiles = args.logdir + logfile[-2] + '/' + logfile[-1]
 
     if os.path.isfile(web2logfiles) and os.path.isfile(logfilearg):
         return 1
 
 # --> creates jaws php conf file
 def jaws_conf_file(vhost):
-    jaws_dir = '/home/sites_web/002-awstats/conf.d/'
+    phpline = '<?php $aConfig["'+ re.sub('\.','_',vhost) +'"] = array("statspath" => "/var/lib/awstats/","updatepath" => "/usr/lib/cgi-bin/awstats.pl/","siteurl" => "http://'+ vhost +'","sitename" => "'+ re.sub('\.','_',vhost) +'","theme" => "default","fadespeed" => 250,"password" => "my-1st-password","includes" => "","language" => "en-gb") ;?>\n'
+
+    #rite file
+    jawsfile = args.jaws + re.sub('\.','_',vhost) + '.php'
+    with open(jawsfile,'w') as jfile:
+        jfile.write(phpline)
 
 # --> creates awstats conf file
 def awstats_conf_file(islb,servername,customlog):
     # merge tool
     mergetool = "/usr/share/awstats/tools/logresolvemerge.pl "
-    
-    if islb:
-        web2logfiles = ' /home/logs/apache2_remy2/' + customlog.split('/')[-2] + '/' + customlog.split('/')[-1]
-        mergelog = mergetool + customlog + web2logfiles + ' |'
-        print 'LogFile="',mergelog,'"'
-        print 'SiteDomain="',servername,'"'
+	
+	if islb:
+        lblogfile = ' ' + args.logdir + customlog.split('/')[-2] + '/' + customlog.split('/')[-1]
+        mergelog = mergetool + customlog + lblogfile + ' |'
+        awsfilename = '/tmp/awstats.' + re.sub('\.','_',servername) + '.conf'
+        confline = 'LogFile="'+ mergelog +'"\nSiteDomaine="'+ servername +'"\nInclude "/etc/awstats/default_vars"\n'
+
     else:
-        print 'LogFle="',customlog,'"'
-        print 'Servername="',servername,'"'
+        confline = 'LogFile="'+ customlog +'"\nSiteDomaine="'+ servername +'"\nInclude "/etc/awstats/default_vars"\n'
+
+    # writing conf file
+    with open(awsfilename,'w') as awsconffile:
+        awsconffile.write(confline)
+    # calling jawsfile
+    jaws_conf_file(servername)
 
 # --> adds a single vhost
 def add_vhost(vhost):
@@ -94,15 +105,6 @@ def add_all():
             add_vhost(l)
 
 # main
-if args.dir:
-    vhostdir = args.dir
-elif args.logdir:
-    logdir = args.logdir
-else:
-    logdir = "/home/logs/apache2/"
-    #vhostdir = "/etc/apache2/sites-enabled/"
-    vhostdir = "/root/scripts/remy/"
-
 if args.site:
     add_vhost(args.site)
 elif args.all:
