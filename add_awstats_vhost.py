@@ -20,6 +20,8 @@ parser.add_argument('-d','--dir',
         metavar='<dir>',type=str,help='Defines the vhost directory.',default='/etc/apache2/sites-enabled/')
 parser.add_argument('-j','--jaws',
         metavar='<jawsdir>',type=str,help='Defines the jaws configuration directory.',default='/home/sites_web/002-awstats/conf.d/')
+parser.add_argument('-w','--aws',
+        metavar='<awsdir>',type=str,help='Defines the awstats configuration directory.',default='/etc/awstats/')
 args = parser.parse_args()
 
 # functions
@@ -46,12 +48,12 @@ def jaws_conf_file(vhost):
 # --> creates awstats conf file
 def awstats_conf_file(islb,servername,customlog):
     # merge tool
-    mergetool = "/usr/share/awstats/tools/logresolvemerge.pl "
-	
+    mergetool = '/usr/share/awstats/tools/logresolvemerge.pl '
+
 	if islb:
         lblogfile = ' ' + args.logdir + customlog.split('/')[-2] + '/' + customlog.split('/')[-1]
         mergelog = mergetool + customlog + lblogfile + ' |'
-        awsfilename = '/tmp/awstats.' + re.sub('\.','_',servername) + '.conf'
+        awsfilename = args.aws + re.sub('\.','_',servername) + '.conf'
         confline = 'LogFile="'+ mergelog +'"\nSiteDomaine="'+ servername +'"\nInclude "/etc/awstats/default_vars"\n'
 
     else:
