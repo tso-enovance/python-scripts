@@ -98,7 +98,7 @@ def add_vhost(vhost):
 
     vhosts_vars = []
     # parsing vhost file
-    with  open(args.dir+vhost) as vhostfile:
+    with open(args.dir+vhost) as vhostfile:
         servername = customlog = None
         for line in vhostfile:
         # lets lookf for all ServerNames and CustomLogs
@@ -115,22 +115,30 @@ def add_vhost(vhost):
                 customlog = line.split()[1]
     
     # lets do other stuff
-    for dico in vhosts_vars:
-        if dico['CustomLog'] and dico['ServerName']:
-            if check_log(dico['CustomLog'],vhost):
-                print 'adding vhost ',dico['ServerName']
-                awstats_conf_file(1,dico['ServerName'],dico['CustomLog'])
-            else:
-                print 'adding vhost ',dico['ServerName']
-                awstats_conf_file(0,dico['ServerName'],dico['CustomLog'])
+    for vhost_info in vhosts_vars:
+        custom_log = vhost_info.get('CustomLog')
+        server_name = vhost_info.get('ServerName')
+
+        if not custom_log or not server_name:
+            print 'No CustomLog found for vhost %s' % server_name
+            continue
+
+        if check_log(custom_log, vhost):
+            islb=True
         else:
-            print 'No CustomLog found for vhost ', dico['ServerName']
+            islb=False
+
+        print 'adding vhost %s ' % server_name
+        awstats_conf_file(islb=islb,
+                          servername=server_name,
+                          customlog=custom_log)
 
 # --> adds all vhosts
 def add_all():
     out = os.listdir(vhostdir)
     for l in out:
-        if not l.startswith("00") and not l.startswith("php") and not l.startswith("preprod") and not l.endswith("-preprod") and not l.endswith("-preprod2"):
+        if not l.startswith("00") \
+        and not l.startswith("php") and not l.startswith("preprod") and not l.endswith("-preprod") and not l.endswith("-preprod2"):
             add_vhost(l)
 
 # main
