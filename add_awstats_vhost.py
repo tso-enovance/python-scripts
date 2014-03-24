@@ -11,17 +11,32 @@ import os
 parser = argparse.ArgumentParser(description='Add a vhost or all enabled vhosts to awstats.',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 group = parser.add_mutually_exclusive_group()
 group.add_argument('-s','--site',
-        metavar='<vhost>',type=str,help='Add a single vhost')
+        metavar='<vhost>',
+		type=str,
+		help='Add a single vhost')
 group.add_argument('-a','--all',
-        help='Add all vhosts',action='store_true')
+        help='Add all vhosts',
+		action='store_true')
 parser.add_argument('-l','--logdir',
-        metavar='<logdir>',type=str,help='Defines the log directory of an other web instance. This is usefull if you have vhosts that are loadbalanced on different servers.',default='/home/logs/apache2_remy2/')
+        metavar='<logdir>',
+		type=str,
+		help='Defines the log directory of an other web instance. This is usefull if you have vhosts that are loadbalanced on different servers.',
+		default='/home/logs/apache2_remy2/')
 parser.add_argument('-d','--dir',
-        metavar='<dir>',type=str,help='Defines the vhost directory.',default='/etc/apache2/sites-enabled/')
+        metavar='<dir>',
+		type=str,
+		help='Defines the vhost directory.',
+		default='/etc/apache2/sites-enabled/')
 parser.add_argument('-j','--jaws',
-        metavar='<jawsdir>',type=str,help='Defines the jaws configuration directory.',default='/home/sites_web/002-awstats/conf.d/')
+        metavar='<jawsdir>',
+		type=str,
+		help='Defines the jaws configuration directory.',
+		default='/home/sites_web/002-awstats/conf.d/')
 parser.add_argument('-w','--aws',
-        metavar='<awsdir>',type=str,help='Defines the awstats configuration directory.',default='/etc/awstats/')
+        metavar='<awsdir>',
+		type=str,
+		help='Defines the awstats configuration directory.',
+		default='/etc/awstats/')
 args = parser.parse_args()
 
 # functions
@@ -38,7 +53,18 @@ def check_log(logfilearg,vhost):
 
 # --> creates jaws php conf file
 def jaws_conf_file(vhost):
-    phpline = '<?php $aConfig["'+ re.sub('\.','_',vhost) +'"] = array("statspath" => "/var/lib/awstats/","updatepath" => "/usr/lib/cgi-bin/awstats.pl/","siteurl" => "http://'+ vhost +'","sitename" => "'+ re.sub('\.','_',vhost) +'","theme" => "default","fadespeed" => 250,"password" => "my-1st-password","includes" => "","language" => "en-gb") ;?>\n'
+    # php code!
+    phpline = '''<?php $aConfig["{revhost}"] = array(
+    "statspath" => "/var/lib/awstats/",
+    "updatepath" => "/usr/lib/cgi-bin/awstats.pl/",
+    "siteurl" => "http://{vvhost}",
+    "sitename" => "{revhost}",
+    "theme" => "default",
+    "fadespeed" => 250,
+    "password" => "my-1st-password",
+    "includes" => "",
+    "language" => "en-gb") ;?>
+'''.format(revhost=re.sub('\.','_',vhost),vvhost=vhost) 
 
     #rite file
     jawsfile = args.jaws + re.sub('\.','_',vhost) + '.php'
