@@ -41,14 +41,21 @@ args = parser.parse_args()
 
 # functions
 # --> checks for log files (web1 and web2)
-def check_log(logfilearg,vhost):
+def check_log(custom_log,vhost):
+    """
+    @params: custom_log, the full path of the log file; vhost, the vhost we are working on.
+    returns: boolean
+    Info: checks for the same log in the log directory (can be specified by the -l option). 
+          This is for "checking" if a vhost is loadbalanced or not.
+    """
     # split
-    logfile = logfilearg.split('/')
+    customlog_basename = os.path.basename(custom_log)
+    logfile = custom_log.split('/')
 
     # check
-    web2logfiles = args.logdir + logfile[-2] + '/' + logfile[-1]
+    web2logfiles = args.logdir + logfile[-2] + '/' + customlog_basename
 
-    if os.path.isfile(web2logfiles) and os.path.isfile(logfilearg):
+    if os.path.isfile(web2logfiles) and os.path.isfile(custom_log):
         return 1
 
 # --> creates jaws php conf file
@@ -73,18 +80,24 @@ def jaws_conf_file(vhost):
 
 # --> creates awstats conf file
 def awstats_conf_file(islb,servername,customlog):
-    # merge tool
+    # stuff
     mergetool = '/usr/share/awstats/tools/logresolvemerge.pl '
+    awsfilename = '%s%s.conf' % (args.aws, re.sub('\.','_',servername))
 
     if islb:
-        lblogfile = ' ' + args.logdir + customlog.split('/')[-2] + '/' + customlog.split('/')[-1]
-        mergelog = mergetool + customlog + lblogfile + ' |'
-        awsfilename = args.aws + re.sub('\.','_',servername) + '.conf'
-        confline = 'LogFile="'+ mergelog +'"\nSiteDomaine="'+ servername +'"\nInclude "/etc/awstats/default_vars"\n'
+        lblogfile = ' %s%s/%s' % (args.logdir,customlog.split('/')[-2],os.path.basename(customlog))
+        mergelog = '%s%s%s |' % (mergetool,customlog,lblogfile)
+
+        # confline
+        confline = '''LogFile="{mergelog}"
+SiteDomaine="{servername}"
+Include "/etc/awstats/default_vars"
+'''.format(mergelog=mergelog,servername=servername)
 
     else:
-        awsfilename = args.aws + re.sub('\.','_',servername) + '.conf'
-        confline = 'LogFile="'+ customlog +'"\nSiteDomaine="'+ servername +'"\nInclude "/etc/awstats/default_vars"\n'
+        confline = '''LogFile="{customlog}"
+SiteDomaine="{servername}"
+Include "/etc/awstats/default_vars"\n'''.format(customlog=customlog,servername=servername)
 
     # writing conf file
     with open(awsfilename,'w') as awsconffile:
