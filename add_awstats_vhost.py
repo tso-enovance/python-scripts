@@ -82,7 +82,7 @@ def jaws_conf_file(vhost):
 def awstats_conf_file(islb,servername,customlog):
     # stuff
     mergetool = '/usr/share/awstats/tools/logresolvemerge.pl '
-    awsfilename = '%s%s.conf' % (args.aws, re.sub('\.','_',servername))
+    awsfilename = 'awstats.%s%s.conf' % (args.aws, re.sub('\.','_',servername))
 
     if islb:
         lblogfile = ' %s%s/%s' % (args.logdir,customlog.split('/')[-2],os.path.basename(customlog))
