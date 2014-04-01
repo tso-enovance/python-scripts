@@ -82,7 +82,7 @@ def jaws_conf_file(vhost):
 def awstats_conf_file(islb,servername,customlog):
     # stuff
     mergetool = '/usr/share/awstats/tools/logresolvemerge.pl '
-    awsfilename = 'awstats.%s%s.conf' % (args.aws, re.sub('\.','_',servername))
+    awsfilename = '%sawstats.%s.conf' % (args.aws, re.sub('\.','_',servername))
 
     if islb:
         lblogfile = ' %s%s/%s' % (args.logdir,customlog.split('/')[-2],os.path.basename(customlog))
@@ -90,13 +90,13 @@ def awstats_conf_file(islb,servername,customlog):
 
         # confline
         confline = '''LogFile="{mergelog}"
-SiteDomaine="{servername}"
+SiteDomain="{servername}"
 Include "/etc/awstats/default_vars"
 '''.format(mergelog=mergelog,servername=servername)
 
     else:
         confline = '''LogFile="{customlog}"
-SiteDomaine="{servername}"
+SiteDomain="{servername}"
 Include "/etc/awstats/default_vars"\n'''.format(customlog=customlog,servername=servername)
 
     # writing conf file
@@ -148,6 +148,7 @@ def add_vhost(vhost):
 
 # --> adds all vhosts
 def add_all():
+    vhostdir = args.dir
     out = os.listdir(vhostdir)
     for l in out:
         if not l.startswith("00") \
