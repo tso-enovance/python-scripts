@@ -65,7 +65,7 @@ def jaws_conf_file(vhost):
     "statspath" => "/var/lib/awstats/",
     "updatepath" => "/usr/lib/cgi-bin/awstats.pl/",
     "siteurl" => "http://{vvhost}",
-    "sitename" => "{revhost}",
+    "sitename" => "{vvhost}",
     "theme" => "default",
     "fadespeed" => 250,
     "password" => "my-1st-password",
@@ -97,7 +97,8 @@ Include "/etc/awstats/default_vars"
     else:
         confline = '''LogFile="{customlog}"
 SiteDomain="{servername}"
-Include "/etc/awstats/default_vars"\n'''.format(customlog=customlog,servername=servername)
+Include "/etc/awstats/default_vars"
+'''.format(customlog=customlog,servername=servername)
 
     # writing conf file
     with open(awsfilename,'w') as awsconffile:
