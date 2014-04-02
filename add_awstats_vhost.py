@@ -95,7 +95,7 @@ Include "/etc/awstats/default_vars"
 '''.format(mergelog=mergelog,servername=servername)
 
     else:
-        confline = '''LogFile="{mergetool} {customlog}*"
+        confline = '''LogFile="{mergetool} {customlog}* |"
 SiteDomain="{servername}"
 Include "/etc/awstats/default_vars"
 '''.format(mergetool=mergetool,customlog=customlog,servername=servername)
