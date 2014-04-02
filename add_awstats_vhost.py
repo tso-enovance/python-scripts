@@ -86,7 +86,7 @@ def awstats_conf_file(islb,servername,customlog):
 
     if islb:
         lblogfile = ' %s%s/%s' % (args.logdir,customlog.split('/')[-2],os.path.basename(customlog))
-        mergelog = '%s%s%s |' % (mergetool,customlog,lblogfile)
+        mergelog = '%s%s*%s* |' % (mergetool,customlog,lblogfile)
 
         # confline
         confline = '''LogFile="{mergelog}"
@@ -95,10 +95,10 @@ Include "/etc/awstats/default_vars"
 '''.format(mergelog=mergelog,servername=servername)
 
     else:
-        confline = '''LogFile="{customlog}"
+        confline = '''LogFile="{mergetool} {customlog}*"
 SiteDomain="{servername}"
 Include "/etc/awstats/default_vars"
-'''.format(customlog=customlog,servername=servername)
+'''.format(mergetool=mergetool,customlog=customlog,servername=servername)
 
     # writing conf file
     with open(awsfilename,'w') as awsconffile:
